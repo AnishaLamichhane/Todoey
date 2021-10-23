@@ -9,6 +9,8 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
     var itemArray = ["Find mike", "nobody", "Maid"]
+    let defaults = UserDefaults.standard
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         let appearance = UINavigationBarAppearance()
@@ -17,6 +19,11 @@ class TodoListViewController: UITableViewController {
         appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
+        
+//        unwrapping from the UserDefaults
+        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+            itemArray = items
+        }
     }
     
     //MARK: - TableView Datasource Methods
@@ -53,12 +60,18 @@ class TodoListViewController: UITableViewController {
     @IBAction func addNewItems(_ sender: UIBarButtonItem) {
         var textField = UITextField()
         let alert = UIAlertController(title: "Add New Item", message: "", preferredStyle: .alert)
-        let action = UIAlertAction(title: "Add Item", style: .default) { action in
+        let action = UIAlertAction(title: "Add Item", style: .default) { [self] action in
             // what will happen when user clicks the add button
             if textField.text! != "" {
-            self.itemArray.append(textField.text!)
+               itemArray.append(textField.text!)
+                defaults.set(itemArray, forKey: "TodoListArray")
+                tableView.reloadData()
             }
-            self.tableView.reloadData()
+            else {
+                
+            }
+            
+            
             
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
