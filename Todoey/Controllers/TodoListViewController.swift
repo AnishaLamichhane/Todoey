@@ -8,7 +8,7 @@
 import UIKit
 
 class TodoListViewController: UITableViewController {
-    var itemArray = ["Find mike", "nobody", "Maid"]
+    var itemArray = [Item]()
     let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
@@ -20,8 +20,25 @@ class TodoListViewController: UITableViewController {
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
         
+        let newItem = Item()
+        newItem.title = "Find Mike"
+        itemArray.append(newItem)
+        
+        let newItem1 = Item()
+        newItem1.title = "But eggs"
+        itemArray.append(newItem1)
+        
+        let newItem2 = Item()
+        newItem2.title = "Mart"
+        itemArray.append(newItem2)
+        
+        let newItem3 = Item()
+        newItem3.title = "Ok done"
+        itemArray.append(newItem3)
+        
 //        unwrapping from the UserDefaults
-        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+        
+        if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
             itemArray = items
         }
     }
@@ -36,10 +53,13 @@ class TodoListViewController: UITableViewController {
     // Provide a cell object for each row.
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // Fetch a cell of the appropriate type.
+//        let cell = UITableViewCell(style: .default, reuseIdentifier: "ToDoItemCell")
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
         
-        // Configure the cell’s contents.
-        cell.textLabel?.text = itemArray[indexPath.row]
+        let item = itemArray[indexPath.row]
+        cell.textLabel?.text = item.title
+        
+        cell.accessoryType = item.done ? .checkmark : .none
         
         return cell
     }
@@ -47,11 +67,10 @@ class TodoListViewController: UITableViewController {
     //MARK: - TableView Delegate Methods
     // these methods are fired whenever the tableview cells are clicked
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if (tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark){
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        } else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+        
+        itemArray[indexPath.row].done.toggle()
+
+        tableView.reloadData() // forces the tableview datasource method to load again
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -62,8 +81,11 @@ class TodoListViewController: UITableViewController {
         let alert = UIAlertController(title: "Add New Item", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add Item", style: .default) { [self] action in
             // what will happen when user clicks the add button
-            if textField.text! != "" {
-               itemArray.append(textField.text!)
+            
+            let newItem = Item()
+            newItem.title = textField.text!
+            if newItem.title != "" {
+               itemArray.append(newItem)
                 defaults.set(itemArray, forKey: "TodoListArray")
                 tableView.reloadData()
             }
