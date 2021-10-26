@@ -9,7 +9,9 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
     var itemArray = [Item]()
-    let defaults = UserDefaults.standard
+    //    let defaults = UserDefaults.standard  //user defaults 1
+    
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,6 +21,8 @@ class TodoListViewController: UITableViewController {
         appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
+        
+        //      for creating new plist file // nsencoder 1
         
         let newItem = Item()
         newItem.title = "Find Mike"
@@ -36,11 +40,10 @@ class TodoListViewController: UITableViewController {
         newItem3.title = "Ok done"
         itemArray.append(newItem3)
         
-//        unwrapping from the UserDefaults
-        
-        if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
-            itemArray = items
-        }
+        //        unwrapping from the UserDefaults
+        //        if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
+        //            itemArray = items
+        //        }
     }
     
     //MARK: - TableView Datasource Methods
@@ -53,7 +56,7 @@ class TodoListViewController: UITableViewController {
     // Provide a cell object for each row.
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // Fetch a cell of the appropriate type.
-//        let cell = UITableViewCell(style: .default, reuseIdentifier: "ToDoItemCell")
+        //        let cell = UITableViewCell(style: .default, reuseIdentifier: "ToDoItemCell")
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
         
         let item = itemArray[indexPath.row]
@@ -69,7 +72,8 @@ class TodoListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         itemArray[indexPath.row].done.toggle()
-
+        saveData()
+        
         tableView.reloadData() // forces the tableview datasource method to load again
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -85,8 +89,11 @@ class TodoListViewController: UITableViewController {
             let newItem = Item()
             newItem.title = textField.text!
             if newItem.title != "" {
-               itemArray.append(newItem)
-                defaults.set(itemArray, forKey: "TodoListArray")
+                itemArray.append(newItem)
+                //      defaults.set(itemArray, forKey: "TodoListArray") //userdefaults 2
+                
+                saveData()
+               
                 tableView.reloadData()
             }
             else {
@@ -105,6 +112,16 @@ class TodoListViewController: UITableViewController {
         alert.addAction(action)
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
+    }
+    
+    func saveData() {
+        let encoder = PropertyListEncoder() // ns encoder 2
+        do {
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error")
+        }
     }
     
 }
