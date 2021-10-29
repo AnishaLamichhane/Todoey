@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AF3950C2272BDF40006491B6 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = AF3950C0272BDF40006491B6 /* DataModel.xcdatamodeld */; };
 		AF4A606027269DE000E18F48 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4A605F27269DE000E18F48 /* Item.swift */; };
 		AFADF2D22710613E00C4F62C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFADF2D12710613E00C4F62C /* AppDelegate.swift */; };
 		AFADF2D42710613E00C4F62C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFADF2D32710613E00C4F62C /* SceneDelegate.swift */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AF3950C1272BDF40006491B6 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 		AF4A605F27269DE000E18F48 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		AFADF2CE2710613E00C4F62C /* Todoey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoey.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AFADF2D12710613E00C4F62C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -42,6 +44,7 @@
 		AF4A606127269DEC00E18F48 /* Data Model */ = {
 			isa = PBXGroup;
 			children = (
+				AF3950C0272BDF40006491B6 /* DataModel.xcdatamodeld */,
 				AF4A605F27269DE000E18F48 /* Item.swift */,
 			);
 			path = "Data Model";
@@ -174,6 +177,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AF4A606027269DE000E18F48 /* Item.swift in Sources */,
+				AF3950C2272BDF40006491B6 /* DataModel.xcdatamodeld in Sources */,
 				AFADF2D62710613E00C4F62C /* TodoListViewController.swift in Sources */,
 				AFADF2D22710613E00C4F62C /* AppDelegate.swift in Sources */,
 				AFADF2D42710613E00C4F62C /* SceneDelegate.swift in Sources */,
@@ -398,6 +402,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		AF3950C0272BDF40006491B6 /* DataModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				AF3950C1272BDF40006491B6 /* DataModel.xcdatamodel */,
+			);
+			currentVersion = AF3950C1272BDF40006491B6 /* DataModel.xcdatamodel */;
+			path = DataModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = AFADF2C62710613E00C4F62C /* Project object */;
 }
