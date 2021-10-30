@@ -53,7 +53,10 @@ class TodoListViewController: UITableViewController {
     // these methods are fired whenever the tableview cells are clicked
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        itemArray[indexPath.row].done.toggle()
+        context.delete(itemArray[indexPath.row])
+        itemArray.remove(at: indexPath.row)
+        
+       // itemArray[indexPath.row].done.toggle()
         saveData()
         
         tableView.reloadData() // forces the tableview datasource method to load again
