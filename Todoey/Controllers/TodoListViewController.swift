@@ -23,6 +23,8 @@ class TodoListViewController: UITableViewController {
         appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
+        
+        loadData()
 
     }
     
@@ -102,16 +104,15 @@ class TodoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-//    func decodeData() {
-//        if let data = try? Data(contentsOf: dataFilePath!)  {
-//            let decoder = PropertyListDecoder()
-//            do {
-//
-//            } catch {
-//                print(error.localizedDescription)
-//            }
-//        }
-//    }
+    func loadData() {
+        let request = Item.fetchRequest()
+            do {
+                itemArray = try context.fetch(request)
+            } catch {
+               print("Error fetching data from context \(error)")
+            }
+        
+   }
     
 }
 
