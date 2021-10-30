@@ -8,7 +8,7 @@
 import UIKit
 import CoreData
 
-class TodoListViewController: UITableViewController {
+class TodoListViewController: UITableViewController{
     var itemArray = [Item]()
     
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -23,9 +23,9 @@ class TodoListViewController: UITableViewController {
         appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
-        
+    
         loadData()
-
+        
     }
     
     //MARK: - TableView Datasource Methods
@@ -56,7 +56,7 @@ class TodoListViewController: UITableViewController {
         context.delete(itemArray[indexPath.row])
         itemArray.remove(at: indexPath.row)
         
-       // itemArray[indexPath.row].done.toggle()
+        // itemArray[indexPath.row].done.toggle()
         saveData()
         
         tableView.reloadData() // forces the tableview datasource method to load again
@@ -102,20 +102,29 @@ class TodoListViewController: UITableViewController {
         do {
             try context.save()
         } catch {
-           print("Error saving context \(error).")
+            print("Error saving context \(error).")
         }
         self.tableView.reloadData()
     }
     
-    func loadData() {
-        let request = Item.fetchRequest()
-            do {
-                itemArray = try context.fetch(request)
-            } catch {
-               print("Error fetching data from context \(error)")
-            }
-        
-   }
+    func loadData(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
+        do {
+            itemArray = try context.fetch(request)
+        } catch {
+            print("Error fetching data from context \(error)")
+        }
+        self.tableView.reloadData()
+    }
     
 }
 
+//MARK: - searchbar delegate methods
+
+extension TodoListViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let request = Item.fetchRequest()
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        loadData(with: request)
+    }
+}
