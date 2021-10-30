@@ -6,9 +6,12 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoListViewController: UITableViewController {
     var itemArray = [Item]()
+    
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
@@ -20,11 +23,7 @@ class TodoListViewController: UITableViewController {
         appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
-        
-        //      for creating new plist file // NSEncoder 1
-        
-       //        using NSEncoder()
-        decodeData()
+//        decodeData()
     }
     
     //MARK: - TableView Datasource Methods
@@ -53,7 +52,7 @@ class TodoListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         itemArray[indexPath.row].done.toggle()
-        encodeData()
+        saveData()
         
         tableView.reloadData() // forces the tableview datasource method to load again
         tableView.deselectRow(at: indexPath, animated: true)
@@ -67,12 +66,13 @@ class TodoListViewController: UITableViewController {
         let action = UIAlertAction(title: "Add Item", style: .default) { [self] action in
             // what will happen when user clicks the add button
             
-            let newItem = Item()
+            let newItem = Item(context: context)
             newItem.title = textField.text!
+            newItem.done = false
             if newItem.title != "" {
                 itemArray.append(newItem)
                 
-                encodeData()
+                saveData()
                 
                 tableView.reloadData()
             }
@@ -91,28 +91,27 @@ class TodoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    //MARK: - Encoding and Decoding using NSEncoder
+    //MARK: - saving and retrieving using core data
     
-    func encodeData() {
-        let encoder = PropertyListEncoder() // ns encoder 2
+    func saveData() {
         do {
-            let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+            try context.save()
         } catch {
-            print("Error")
+           print("Error saving context \(error).")
         }
+        self.tableView.reloadData()
     }
     
-    func decodeData() {
-        if let data = try? Data(contentsOf: dataFilePath!)  {
-            let decoder = PropertyListDecoder()
-            do {
-                itemArray = try decoder.decode([Item].self, from: data)
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
-    }
+//    func decodeData() {
+//        if let data = try? Data(contentsOf: dataFilePath!)  {
+//            let decoder = PropertyListDecoder()
+//            do {
+//
+//            } catch {
+//                print(error.localizedDescription)
+//            }
+//        }
+//    }
     
 }
 
