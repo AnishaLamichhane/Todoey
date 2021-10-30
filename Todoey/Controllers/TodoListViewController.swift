@@ -23,7 +23,7 @@ class TodoListViewController: UITableViewController {
         appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
-//        decodeData()
+
     }
     
     //MARK: - TableView Datasource Methods
