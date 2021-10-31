@@ -23,7 +23,7 @@ class TodoListViewController: UITableViewController{
         appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
-    
+        
         loadData()
         
     }
@@ -115,7 +115,6 @@ class TodoListViewController: UITableViewController{
         }
         self.tableView.reloadData()
     }
-    
 }
 
 //MARK: - searchbar delegate methods
@@ -126,5 +125,14 @@ extension TodoListViewController: UISearchBarDelegate {
         request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
         request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         loadData(with: request)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadData()
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
     }
 }
