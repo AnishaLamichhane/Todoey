@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreData
+import RealmSwift
 
 class TodoListViewController: UITableViewController{
     var itemArray = [Item]()
@@ -17,8 +18,6 @@ class TodoListViewController: UITableViewController{
     }
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
-//    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         let appearance = UINavigationBarAppearance()
@@ -27,7 +26,7 @@ class TodoListViewController: UITableViewController{
         appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
-    
+        
     }
     
     //MARK: - TableView Datasource Methods
@@ -55,10 +54,10 @@ class TodoListViewController: UITableViewController{
     // these methods are fired whenever the tableview cells are clicked
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        context.delete(itemArray[indexPath.row])
-        itemArray.remove(at: indexPath.row)
+        //        context.delete(itemArray[indexPath.row])
+        //        itemArray.remove(at: indexPath.row)
         
-        // itemArray[indexPath.row].done.toggle()
+        itemArray[indexPath.row].done.toggle()
         saveData()
         
         tableView.reloadData() // forces the tableview datasource method to load again
@@ -117,9 +116,9 @@ class TodoListViewController: UITableViewController{
         if let additionalPredicate = predicate {
             request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
         }else {
-            request.predicate = categoryPredicate 
+            request.predicate = categoryPredicate
         }
-       
+        
         do {
             itemArray = try context.fetch(request)
         } catch {
