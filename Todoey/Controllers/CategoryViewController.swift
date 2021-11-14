@@ -6,9 +6,12 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class CategoryViewController: UITableViewController {
+    
+    let realm = try! Realm()
+    
 var categoryArray = [Category]()
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     override func viewDidLoad() {
@@ -20,7 +23,7 @@ var categoryArray = [Category]()
         navigationItem.standardAppearance = appearance
         navigationItem.scrollEdgeAppearance = appearance
         
-        loadData()
+//        loadData()
 
     }
 
@@ -54,52 +57,41 @@ var categoryArray = [Category]()
     
     //MARK: - Data manipulation methods
     
-    func saveData() {
+    func save(category: Category) {
         do {
-            try context.save()
+            try realm.write({
+                realm.add(category)
+            })
         }catch {
             print("Error saving data \(error)")
         }
         self.tableView.reloadData()
     }
     
-    func loadData(with request: NSFetchRequest<Category> = Category.fetchRequest()){
-        do {
-            categoryArray = try context.fetch(request)
-        }catch {
-            print("Error fetching data from context \(error)")
-        }
-        self.tableView.reloadData()
-    }
+//    func loadData(with request: NSFetchRequest<Category> = Category.fetchRequest()){
+////        do {
+////            categoryArray = try context.fetch(request)
+////        }catch {
+////            print("Error fetching data from context \(error)")
+////        }
+////        self.tableView.reloadData()
+//    }
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-    
     //MARK: - Add new categories
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
        var textField = UITextField()
         let alert = UIAlertController(title: "Add New Category.", message: "", preferredStyle: .alert)
         let addAction = UIAlertAction(title: "Add Categoty", style: .default) { [self] action in
-            let newCategory = Category(context: context)
-            newCategory.name = textField.text
-            if newCategory.name! != "" {
+            let newCategory = Category()
+            newCategory.name = textField.text!
+        
                 categoryArray.append(newCategory)
                 
-                saveData()
+                save(category: newCategory)
                 
                 tableView.reloadData()
-            }
-            else {
-                
-            }
+          
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
