@@ -6,13 +6,15 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class TodoListViewController: UITableViewController{
-    var itemArray = [Item]()
+    var todoItems: Results<Item>?
+    let realm = try! Realm()
+    
     var selectedCategory: Category? {
         didSet {
-//            loadData()
+            loadData()
         }
     }
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -32,7 +34,7 @@ class TodoListViewController: UITableViewController{
     
     // Return the number of rows for the table.
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemArray.count
+        return todoItems?.count ?? 1
     }
     
     // Provide a cell object for each row.
@@ -41,11 +43,12 @@ class TodoListViewController: UITableViewController{
         //  let cell = UITableViewCell(style: .default, reuseIdentifier: "ToDoItemCell")
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
         
-        let item = itemArray[indexPath.row]
-        cell.textLabel?.text = item.title
-        
-        cell.accessoryType = item.done ? .checkmark : .none
-        
+        if let item = todoItems?[indexPath.row] {
+            cell.textLabel?.text = item.title
+            cell.accessoryType = item.done ? .checkmark : .none
+        }else {
+            cell.textLabel?.text = "No items added."
+        }
         return cell
     }
     
@@ -53,13 +56,17 @@ class TodoListViewController: UITableViewController{
     // these methods are fired whenever the tableview cells are clicked
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        //        context.delete(itemArray[indexPath.row])
-        //        itemArray.remove(at: indexPath.row)
-        
-        itemArray[indexPath.row].done.toggle()
-        saveData()
-        
-        tableView.reloadData() // forces the tableview datasource method to load again
+        if let item = todoItems?[indexPath.row]{
+            do {
+                try realm.write {
+                    item.done = !item.done
+                }
+            }catch{
+                print("Error saving done status \(error)")
+            }
+        }
+      
+        tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -70,22 +77,18 @@ class TodoListViewController: UITableViewController{
         let alert = UIAlertController(title: "Add New Item", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add Item", style: .default) { [self] action in
             // what will happen when user clicks the add button
-            
-//            let newItem = Item(context: context)
-//            newItem.title = textField.text!
-//            newItem.done = false
-//            newItem.parentCategory = selectedCategory
-//
-//            if newItem.title != "" {
-//                itemArray.append(newItem)
-//
-//                saveData()
-//
-//                tableView.reloadData()
-//            }
-//            else {
-//
-//            }
+            if let currentCategory = selectedCategory{
+                do {
+                    try realm.write({
+                        let newItem = Item()
+                        newItem.title = textField.text!
+                        currentCategory.items.append(newItem)
+                    })
+                } catch {
+                    print("Error saving items \(error)")
+                }
+            }
+            tableView.reloadData()
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alert.addTextField { alertTextField in
@@ -100,31 +103,10 @@ class TodoListViewController: UITableViewController{
     
     //MARK: - saving and retrieving using core data
     
-    func saveData() {
-        do {
-            try context.save()
-        } catch {
-            print("Error saving context \(error).")
-        }
+    func loadData() {
+        todoItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
         self.tableView.reloadData()
     }
-    
-//    func loadData(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
-//        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
-//
-//        if let additionalPredicate = predicate {
-//            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
-//        }else {
-//            request.predicate = categoryPredicate
-//        }
-//
-//        do {
-//            itemArray = try context.fetch(request)
-//        } catch {
-//            print("Error fetching data from context \(error)")
-//        }
-//        self.tableView.reloadData()
-//    }
 }
 
 //MARK: - searchbar delegate methods
